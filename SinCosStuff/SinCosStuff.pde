@@ -9,9 +9,10 @@ int rY;
 //how many dirt above the stone
 int randDirt = 0;
 
-
+//set text to draw on the grass
 String[] text = {"N", "o", "c", "h", " ", "F", "r", "a", "g", "e", "n", "?"};
 
+//calculators for text-position
 int textLength = text.length;
 int startTextAt;
 int getChar = 0;
@@ -19,7 +20,11 @@ int getChar = 0;
 void setup() {
 
   size(1900, 1000);
+  
+  //get amount of blocks
   startTextAt = width / blockSize;
+  
+  //calculate the first block at which the text should start
   startTextAt = (int)random(0, startTextAt - textLength);
 
   //background
@@ -85,16 +90,16 @@ void setup() {
 
     bY += rY;
     
-    //if (getChar >= startTextAt && getChar < startTextAt + textLength) {
-    //  println("HI");
-    //  fill(0);
-    //  textSize(64);
-    //  textAlign(CENTER);
-    //  if (getChar-startTextAt == 8) {
-    //    text(text[getChar-startTextAt], getChar*blockSize+blockSize/2, bY-12);
-    //  } else {
-    //    text(text[getChar-startTextAt], getChar*blockSize+blockSize/2, bY);
-    //  }
-    //}
+    //draw text    
+    if (getChar >= startTextAt && getChar < startTextAt + textLength) {
+      fill(0);
+      textSize(64);
+      textAlign(CENTER);
+      if (getChar-startTextAt == 8) {
+        text(text[getChar-startTextAt], getChar*blockSize+blockSize/2, bY-12);
+      } else {
+        text(text[getChar-startTextAt], getChar*blockSize+blockSize/2, bY);
+      }
+    }
   }
 }
