@@ -5,7 +5,6 @@ class Ball {
   float vy = 0;
   color colorBall;
   int id;
-  Boolean done = false;
   ArrayList<Ball> others;
 
   Ball(float xIn, float yIn, float diaIn, int idIn, ArrayList othersIn, color colorIn) {
