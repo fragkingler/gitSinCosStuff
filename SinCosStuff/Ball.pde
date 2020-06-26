@@ -17,8 +17,7 @@ class Ball {
   } 
 
   void collide() {
-    for (int i = id + 1; i < others.size(); i++) {
-
+    for (int i = others.size()-1; i >= 0; i--) {
       float dx = others.get(i).x - x;
       float dy = others.get(i).y - y;
       float distance = sqrt(dx*dx + dy*dy);
