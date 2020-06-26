@@ -6,6 +6,7 @@ class Ball {
   color colorBall;
   int id;
   ArrayList<Ball> others;
+  boolean ballKilled = false;
 
   Ball(float xIn, float yIn, float diaIn, int idIn, ArrayList othersIn, color colorIn) {
     x = xIn;
@@ -62,13 +63,18 @@ class Ball {
     ellipse(x, y, diameter, diameter);
   }
 
-  void kill(int ballToKill) {
+  boolean kill(int ballToKill) {
     if (diameter > 0) {
       diameter -= 10;
       if (diameter <= 8) {
         diameter = 0;
-        others.remove(ballToKill);
+        ballKilled = true;
+        for (int i = others.size()-1; i >= 0; i--) {
+          if (others.get(i).id == ballToKill)
+            others.remove(i);
+        }
       }
     }
+    return ballKilled;
   }
 }

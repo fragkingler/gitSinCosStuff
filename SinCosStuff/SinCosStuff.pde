@@ -7,7 +7,8 @@ float gravity = 0.03;
 float friction = -0.4;
 ArrayList<Ball> balls = new ArrayList<Ball>();
 int colorChange = 1;
-boolean looping = true;
+boolean looping = true, killBall = false;
+int ballToKill;
 
 void setup() {  
   size(1000, 800);
@@ -21,10 +22,21 @@ void setup() {
 void draw() {
   if (looping) {
     background(0);
-    for (Ball ball : balls) {
-      ball.collide();
-      ball.move();
-      ball.display();
+    for (int i = balls.size()-1; i >= 0; i--) {
+      balls.get(i).collide();
+      balls.get(i).move();
+      balls.get(i).display();
+
+      if (balls.get(i).id == ballToKill && killBall == true && frameCount % 2 == 0) {
+        balls.get(i).kill(ballToKill);
+        try {
+          if (balls.get(i).ballKilled)
+            killBall = false;
+        }
+        catch (Exception e) {
+          killBall = false;
+        }
+      }
     }
   }
 }
@@ -58,7 +70,9 @@ void mouseReleased() {
     for (int i = balls.size()-1; i >= 0; i--) {
       Ball ball = balls.get(i);
       if ((ball.x + ball.diameter) > mouseX && (ball.x - ball.diameter) < mouseX && (ball.y + ball.diameter) > mouseY && (ball.y - ball.diameter) < mouseY) {
-        ball.kill(i);
+        //ball.kill(i);
+        ballToKill = ball.id;
+        killBall = true;
       }
     }
   }
