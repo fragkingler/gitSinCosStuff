@@ -1,0 +1,9 @@
+// HARDLIMITS; DO NOT DECEED/EXCEED TO PREVENT PROBLEMS
+
+minimals:
+temperatur: 15
+anwesende: 0 
+
+maximals:
+temperatur: 29
+anwesende: 36

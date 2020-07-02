@@ -1,39 +1,45 @@
 class Three {
+  private float x, y, rgba, r, g, b, calc, red, blue, bg, baseHeight;
 
-  private int bg;
-  private float x, y, gh, rgbl, r, g, b;
-
-  Three( float x, float y, float rgbl, float r, float g, float b, int bg, float gh ) {
+  Three( float x, float y, float rgba, float r, float g, float b, float bg, float baseHeight ) {
     this.x = x;
     this.y = y;
-    this.rgbl = rgbl;
+    this.rgba = rgba;
     this.r = r;
     this.g = g;
     this.b = b;
     this.bg = bg;
-    this.gh = gh;
+    this.baseHeight = baseHeight;
   }
 
-  void drawthree() {
+  void drawThree() {
 
     noStroke();
-    if ( this.rgbl > this.bg )  // limiting the transparency for the people inside the room
-      this.rgbl = this.bg;
 
-    //fill( 0 );
-    //rect( 0, y + ( baseheight / 2 ), width, 1 );
+    if ( this.rgba > ( this.bg / 1.3 ) )  // limiting the transparency for the people inside the room
+      this.rgba = ( this.bg / 1.3 );
 
-    fill( this.r, this.g, this.b ); // the three that is visible and changes colors on remand of the temperature
-    rect( this.x - ( this.gh / 2 ), this.y - ( this.gh / 2 ), this.gh / 2, this.gh, this.gh / 6 );
-    rect( this.x - ( this.gh / 2.5 ), this.y - ( this.gh / 2 ), this.gh / 6, this.gh / 10 );
-    rect( this.x - ( this.gh / 2.5 ), this.y + ( this.gh / 2 - (this.gh / 10 ) ), this.gh / 6, this.gh / 10 );
+    this.calc = this.rgba / this.bg;  // calc offset between opacity and background
+
+    this.red = this.bg - this.r;
+    this.r = this.r + ( this.red * this.calc );
+
+    this.g = this.rgba;
+
+    this.blue = this.bg - this.b;
+    this.b = this.b + ( this.blue * this.calc );
+
+    fill( this.r, this.g, this.b ); // the three that is visible and changes colors depending on the temperature
+    rect( this.x - ( this.baseHeight / 2 ), this.y - ( this.baseHeight / 2 ), this.baseHeight / 2, this.baseHeight, this.baseHeight / 6 );
+    rect( this.x - ( this.baseHeight / 2.5 ), this.y - ( this.baseHeight / 2 ), this.baseHeight / 6, this.baseHeight / 10 );
+    rect( this.x - ( this.baseHeight / 2.5 ), this.y + ( this.baseHeight / 2 - (this.baseHeight / 10 ) ), this.baseHeight / 6, this.baseHeight / 10 );
 
     fill( this.bg ); // covers parts of the three to make it the actual logo
-    rect( this.x - ( this.gh / 2 ), this.y - ( this.gh / 2 - ( this.gh / 10 ) ), this.gh / 2.5, this.gh / 3 + ( this.gh / 75 ), this.gh / 10 );
-    rect( this.x - ( this.gh / 2 ), this.y + ( this.gh / 6.5 - ( this.gh / 10 ) ), this.gh / 2.5, this.gh / 3 + (this.gh / 75), this.gh / 10 );
-    rect( this.x - ( this.gh / 2) + ( this.gh / 10 ), this.y - ( this.gh / 2 ) + ( this.gh / 10 ), this.gh / 10, this.gh - ( this.gh / 5 ) );
+    rect( this.x - ( this.baseHeight / 2 ), this.y - ( this.baseHeight / 2 - ( this.baseHeight / 10 ) ), this.baseHeight / 2.5, this.baseHeight / 3 + ( this.baseHeight / 75 ), this.baseHeight / 10 );
+    rect( this.x - ( this.baseHeight / 2 ), this.y + ( this.baseHeight / 6.5 - ( this.baseHeight / 10 ) ), this.baseHeight / 2.5, this.baseHeight / 3 + (this.baseHeight / 75), this.baseHeight / 10 );
+    rect( this.x - ( this.baseHeight / 2) + ( this.baseHeight / 10 ), this.y - ( this.baseHeight / 2 ) + ( this.baseHeight / 10 ), this.baseHeight / 10, this.baseHeight - ( this.baseHeight / 5 ) );
 
-    fill( this.rgbl );  // the adjustable line for the amount of people inside the room
-    rect( this.x - ( this.gh / 2 ) - 1, this.y - ( this.gh / 2 ), this.gh / 10 + 2, this.gh );
+    fill( this.r, this. g, this.b );  // the adjustable line for the amount of people inside the room
+    rect( this.x - ( this.baseHeight / 2 ) - 1, this.y - ( this.baseHeight / 2 ), this.baseHeight / 10 + 2, this.baseHeight );
   }
 }
