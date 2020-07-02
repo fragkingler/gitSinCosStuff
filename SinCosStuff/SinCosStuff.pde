@@ -69,7 +69,7 @@ void mouseReleased() {
   if (looping) {
     for (int i = balls.size()-1; i >= 0; i--) {
       Ball ball = balls.get(i);
-      if ((ball.x + ball.diameter) > mouseX && (ball.x - ball.diameter) < mouseX && (ball.y + ball.diameter) > mouseY && (ball.y - ball.diameter) < mouseY) {
+      if ((ball.x + ball.diameter/2) > mouseX && (ball.x - ball.diameter/2) < mouseX && (ball.y + ball.diameter/2) > mouseY && (ball.y - ball.diameter/2) < mouseY) {
         //ball.kill(i);
         ballToKill = ball.id;
         killBall = true;
