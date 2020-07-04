@@ -6,7 +6,6 @@ class Agent {
   ArrayList<Agent> others;
   int id, otherId;
   float distance;
-  FloatList item = new FloatList();
   ArrayList<FloatList> closest;
   int amount;
 
@@ -61,25 +60,33 @@ class Agent {
   void connect(ArrayList others) { // connect objects with one-another
     this.others = others;
     for (int i = others.size()-1; i >= 0; i--) {
-      if (this.id != this.others.get(i).id) { // this comment saves me from out-of-bounds, workaround shouldn't be a big problem tho'
+      if (this.id != this.others.get(i).id) {
         distance = dist(this.position.x, this.position.y, this.others.get(i).position.x, this.others.get(i).position.y);
         otherId = this.others.get(i).id;
-        item.append(distance);
-        item.append(otherId);
-        println("current item: " + item);
-        closest.add(closest.size(), item);
-        println("Array of items: " + closest);
-        item.clear();
+        closest.add(closest.size(), new FloatList(distance, otherId));
 
         stroke(255);
-        if (this.id != 4) {
-          beginShape(TRIANGLES);
-          vertex(this.others.get(i).position.x, this.others.get(i).position.y);
-          vertex(this.others.get(i).position.x, this.others.get(i).position.y);
-          vertex(mouseX, mouseY);
-          endShape();
+      }
+    }
+    for (int i = 0; i < closest.size()-1; i++) {
+      FloatList cur = closest.get(i);
+      for (int j = i; j < closest.size(); j++) {
+        FloatList next = closest.get(j);
+        if (next.get(0) < cur.get(0)) {
+          FloatList tmp = cur;
+          closest.set(i, closest.get(j));
+          closest.set(j, tmp);
+          break;
         }
       }
+    }
+    if (this.id == 0) {
+      int nearestId = (int)closest.get(0).get(1);
+      beginShape(TRIANGLES);
+      vertex(this.others.get(nearestId).position.x, this.others.get(nearestId).position.y);
+      vertex(this.position.x, this.position.y);
+      vertex(mouseX, mouseY);
+      endShape();
     }
     closest.clear();
   }
