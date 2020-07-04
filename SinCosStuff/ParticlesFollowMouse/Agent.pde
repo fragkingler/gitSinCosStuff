@@ -58,15 +58,17 @@ class Agent {
     }
   }
 
-  void connect(ArrayList others) {
+  void connect(ArrayList others) { // connect objects with one-another
     this.others = others;
     for (int i = others.size()-1; i >= 0; i--) {
-      if (this.id != this.others.get(i).id) {
+      if (this.id != this.others.get(i).id) { // this comment saves me from out-of-bounds, workaround shouldn't be a big problem tho'
         distance = dist(this.position.x, this.position.y, this.others.get(i).position.x, this.others.get(i).position.y);
         otherId = this.others.get(i).id;
         item.append(distance);
         item.append(otherId);
-        closest.add(item);
+        println("current item: " + item);
+        closest.add(closest.size(), item);
+        println("Array of items: " + closest);
         item.clear();
 
         stroke(255);
@@ -79,5 +81,6 @@ class Agent {
         }
       }
     }
+    closest.clear();
   }
 }
