@@ -41,16 +41,18 @@ import java.util.Collections;
 import java.util.Comparator;
 
 Agent myAgent;
+AgentController aController;
 ArrayList<Agent> agents;
 
-int agentAmount = 15; // set the amount of agents/balls
 
 void setup() {
   size(1000, 1000);
+  int agentAmount = 15; // set the amount of agents/balls
   agents = new ArrayList<Agent>();
   for (int i = 0; i < agentAmount; i++) {
-    agents.add(new Agent(i, agentAmount));
+    agents.add(new Agent(i));
   }
+  aController = new AgentController(agentAmount);
 }
 
 void draw() {
@@ -60,6 +62,6 @@ void draw() {
     agent.update();
     agent.edges();
     agent.show();
-    agent.connect(agents);
+    aController.connect(agents);
   }
 }
