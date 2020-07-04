@@ -13,7 +13,7 @@ class Agent {
     position = new PVector(random(0, width), random(0, height));
     velocity = new PVector(0, 0);
     acceleration = new PVector(0, 0);
-    maxSpeed = 10;
+    maxSpeed = random(5,15);
     this.id = id;
     closest = new ArrayList<FloatList>(amount);
     this.amount = amount;
@@ -26,9 +26,13 @@ class Agent {
   }
 
   void show() {
-    noStroke();
-    fill(255);
+    stroke(120, 100);
+    fill(255, 100);
     circle(position.x, position.y, 50);
+    textSize(40);
+    textAlign(CENTER, CENTER);
+    fill(255, 0, 0);
+    text(this.id, position.x, position.y);
   }
 
   void seek(PVector target) {
@@ -36,7 +40,7 @@ class Agent {
     direction = PVector.sub(target, position);
     direction.normalize();
     acceleration = direction;
-    acceleration.mult(0.5);
+    acceleration.mult(random(0.2,0.8));
     stroke(255);
     //line(position.x, position.y, mouseX, mouseY);
   }
@@ -58,36 +62,33 @@ class Agent {
   }
 
   void connect(ArrayList others) { // connect objects with one-another
-    this.others = others;
-    for (int i = others.size()-1; i >= 0; i--) {
-      if (this.id != this.others.get(i).id) {
-        distance = dist(this.position.x, this.position.y, this.others.get(i).position.x, this.others.get(i).position.y);
+    if (this.id == 0) {
+      fill(255, 100);
+      this.others = others;
+      for (int i = others.size()-1; i >= 0; i--) {
+        distance = dist(mouseX, mouseY, this.others.get(i).position.x, this.others.get(i).position.y);
         otherId = this.others.get(i).id;
         closest.add(closest.size(), new FloatList(distance, otherId));
+      }
+      Collections.sort(closest, FL_CMP);
 
-        stroke(255);
-      }
-    }
-    for (int i = 0; i < closest.size()-1; i++) {
-      FloatList cur = closest.get(i);
-      for (int j = i; j < closest.size(); j++) {
-        FloatList next = closest.get(j);
-        if (next.get(0) < cur.get(0)) {
-          FloatList tmp = cur;
-          closest.set(i, closest.get(j));
-          closest.set(j, tmp);
-          break;
-        }
-      }
-    }
-    if (this.id == 0) {
       int nearestId = (int)closest.get(0).get(1);
+      int nearestId2 = (int)closest.get(1).get(1);
       beginShape(TRIANGLES);
       vertex(this.others.get(nearestId).position.x, this.others.get(nearestId).position.y);
-      vertex(this.position.x, this.position.y);
+      vertex(this.others.get(nearestId2).position.x, this.others.get(nearestId2).position.y);
       vertex(mouseX, mouseY);
       endShape();
+      closest.clear();
     }
-    closest.clear();
   }
 }
+
+static final Comparator<FloatList> FL_CMP = new Comparator<FloatList>() {
+  @ Override final int compare(final FloatList a, final FloatList b) {
+    int cmp;
+    return
+      (cmp = Float.compare(a.get(0), b.get(0))) != 0? cmp :      
+      (cmp = Float.compare(a.get(1), b.get(1)));
+  }
+};

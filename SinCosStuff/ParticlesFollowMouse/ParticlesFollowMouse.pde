@@ -38,10 +38,12 @@
 //}
 
 import java.util.Collections;
+import java.util.Comparator;
+
 Agent myAgent;
 ArrayList<Agent> agents;
 
-int agentAmount = 5;
+int agentAmount = 15; // set the amount of agents/balls
 
 void setup() {
   size(1000, 1000);
