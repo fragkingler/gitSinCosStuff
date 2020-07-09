@@ -3,6 +3,7 @@ class Agent {
   PVector position, velocity, acceleration;
   float maxSpeed, diameter;
   ArrayList<Agent> others;
+  color c;
 
   Agent(int id) {
     position = new PVector(random(0, width), random(0, height));
@@ -11,6 +12,7 @@ class Agent {
     maxSpeed = random(5,15);
     this.id = id;
     diameter = random(30, 80);
+    c = color((int)random(0, 255), (int)random(0, 255), (int)random(0, 255), (int)random(100, 255));
   }
 
   void update() {
@@ -20,13 +22,13 @@ class Agent {
   }
 
   void show() {
-    stroke(120, 100);
-    fill(255, 100);
+    noStroke();
+    fill(c);
     circle(position.x, position.y, diameter);
     textSize(40);
     textAlign(CENTER, CENTER);
     fill(255, 0, 0);
-    text(this.id, position.x, position.y);
+    //text(this.id, position.x, position.y);
   }
 
   void seek(PVector target) {
