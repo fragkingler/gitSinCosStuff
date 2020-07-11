@@ -33,7 +33,7 @@ void setup() {
 void draw() {
   lights();
   setGradient(0, 0, -4000, width, height, b1, b2);
-  noise.drawNoise(); // draw noise with animation
+  //noise.drawNoise(); // draw noise with animation
   translate(width/1.5, height/1.4, 0);
   translate(-colsY*blockSize/2, yMod+colsX*blockSize/4, zMod+colsZ*blockSize/4);
   rotateX(rX);

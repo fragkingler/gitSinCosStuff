@@ -34,7 +34,9 @@ class DrawTerrain {
         } else {
           activeColor = lerpColor(dirt, grass, map(terrain[x][y], dirtEnd, grassEnd, 0, 1));
         }
-        fill(activeColor);
+        fill(activeColor, map(rows*(y+1), 1, rows+1, 0, 255));
+        if (y==0)
+          println(map(rows*(y+1), 0, 255, 0, 100));
         translate(x*scl, y*scl, terrain[x][y]);
         box(scl);
         translate(0, 0, 0-scl);
