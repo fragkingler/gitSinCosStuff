@@ -1,3 +1,4 @@
+Noise noise;
 
 int colsX = 10;
 int colsZ = 10;
@@ -9,6 +10,9 @@ float rY = 0;
 float rZ = 0;
 int blockSize = 40;
 int xMod, yMod = -50, zMod = -200;
+float noiseScale = 0.02;
+float noiseIncrement = 0.002;
+float noiseZIncrement = 0.0; // animation rate of noise. 0 = no animation
 
 boolean mouseRotate = false;
 
@@ -19,6 +23,7 @@ ArrayList<Block> blocks;
 void setup() {
   hint(ENABLE_KEY_REPEAT);
   blocks = new ArrayList<Block>();
+  noise = new Noise(noiseIncrement, noiseZIncrement); // new noise generator
   size(1000, 800, P3D);
   b1 = color(30, 151, 235);
   b2 = color(125, 214, 251);
@@ -28,6 +33,7 @@ void setup() {
 void draw() {
   lights();
   setGradient(0, 0, -4000, width, height, b1, b2);
+  noise.drawNoise(); // draw noise with animation
   translate(width/1.5, height/1.4, 0);
   translate(-colsY*blockSize/2, yMod+colsX*blockSize/4, zMod+colsZ*blockSize/4);
   rotateX(rX);
