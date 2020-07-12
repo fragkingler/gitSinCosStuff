@@ -1,56 +1,88 @@
-int cols, rows;
-int scl = 20;
-int w = 1600;
-int h = 1000;
-int waterStart = -20;
-float lightX = 500, lightY = 1250, lightZ=1300;
-color b1, b2;
-float flying = 0, flyingInc = -0.01;
-color stone = color(100, 90, 110);
-color dirt = color(120, 70, 20);
-color grass = color(60, 180, 40);
-color activeColor;
-float terrainMax = 150;
-float terrainMin = -100;
-float stoneEnd = 00;
-float dirtEnd = 60;
-float grassEnd = 100;
-float[][] terrain;
+int cols, rows, blockSize, w, h, waterHeight;
+color gradient1, gradient2; // Color for background-fade
+color stone, dirt, grass, waterColor, activeColor;
+float flying, flyingInc, lightX, lightY, lightZ;
+float terrainMax, terrainMin, stoneEnd, dirtEnd, grassEnd;
+float[][] terrain; // Array which stores calculated terrain
 
-CalcTerrain cTerrain;
-DrawTerrain dTerrain;
-Water water;
-Gradient gradient;
+CalcTerrain cTerrain; // This class is providing terrain calculation
+DrawTerrain dTerrain; // This class draws the calculated terrain
+Water water; // This class handles water
 
 void setup() {
-  hint(ENABLE_KEY_REPEAT);
-  size(600, 600, P3D);
+  //hint(ENABLE_KEY_REPEAT); // This activates registering long key press as multiple key-press
+  size(1000, 800, P3D); 
   frameRate(30);
-  cols = w / scl;
-  rows = h / scl;
-  b1 = color(30, 151, 235);
-  b2 = color(125, 214, 251);
+
+  w = int(width*2.5); // Width of 2d-Terrain
+  h = int(height*2); // Height of 2d-Terrain
+  blockSize = 20; // Size of each block
+
+  waterHeight = -20; // Level at which water is drawn
+  stoneEnd = 00; // Stone-color if block is at or below this Z value
+  dirtEnd = 60; // Dirt-color if block is at exactly this Z value
+  grassEnd = 100; // Grass color if block is at or higher than this Z value
+
+  terrainMin = -100; // Maximum negative terrain distortion
+  terrainMax = 150; // Maximum positive terrain distortion
+
+  // Make ground appear like it's flying; flyingInc = speed, has to be negative to fly "forward"
+  flying = 0;
+  flyingInc = -0.01;
+
+  // Position lightning source
+  lightX = 500;
+  lightY = 1250;
+  lightZ = 1300;
+
+  gradient1 = color(30, 151, 235);
+  gradient2 = color(125, 214, 251);
+
+  stone = color(100, 90, 110); // Base-color of stone
+  dirt = color(120, 70, 20); // Base-color of dirt
+  grass = color(60, 180, 40); // Base-color of grass
+  waterColor = color(19, 31, 149); // Water-Color
+
+  // Calculate the amount of blocks 
+  cols = w / blockSize; 
+  rows = h / blockSize;
+
+  // Enable lights and draw basic 3d-lightning
   lights();
   directionalLight(126, 126, 126, lightX, lightY, lightZ);
-  gradient = new Gradient(0, 0, -4000, width, height, b1, b2);
-  cTerrain = new CalcTerrain(cols, rows, terrainMin, terrainMax);
-  terrain = cTerrain.calcTerrain(flying);
-  water = new Water(cols, rows, terrain, scl, waterStart);
-  dTerrain = new DrawTerrain(cols, rows, scl, stoneEnd, dirtEnd, grassEnd, w, h, terrain);
+
+  // Constructor for each class
+  cTerrain = new CalcTerrain(cols, rows, terrainMin, terrainMax); // Params: as var-names
+  terrain = cTerrain.calcTerrain(flying); // Params: speed at which terrain should move
+  water = new Water(cols, rows, blockSize, waterHeight, waterColor, terrain); // Params: as var-names
+  dTerrain = new DrawTerrain(cols, rows, blockSize, stoneEnd, dirtEnd, grassEnd, w, h); // Params: as var-names
 }
 
 void draw() {
+
+  // Enable lights and draw basic 3d-lightning
   lights();
-  directionalLight(126, 126, 126, lightX, lightY, lightZ);
+  directionalLight(126, 126, 126, lightX, lightY, lightZ); // Variables: red, green, blue, X, Y, Z
+
+  // Increment flying by flyingInc in order to have a continuous "flying" effect on the terrain
   flying+=flyingInc;
-  terrain = cTerrain.calcTerrain(flying);
-  dTerrain.drawTerrain();
+
+  // Pass increased flying value to calcTerrain to recalculate the "moved" terrain and save the resulted new terrain in the terrain-variable
+  terrain = cTerrain.calcTerrain(flying); 
+
+  // Draw terrain after it has been calculated
+  dTerrain.drawTerrain(terrain);
+
+  // Draw water in according spots after terrain has been calculated
   water.calcWater(terrain);
-  if (frameCount <= 300) {
-    saveFrame("terrain-#######.png");
-  }
+
+  // Export png's for animation
+  //if (frameCount <= 300) {
+  //  saveFrame("terrain-#######.png");
+  //}
 }
 
+// Possible interactions with keystrokes; was used to position 3d-light accordingly
 //void keyPressed() {
 //  if (key == 'd') {
 //    lightX += 10;
