@@ -14,11 +14,11 @@ void setup() {
   size(562, 794, P3D); // Fully adjustable scaling based on size; don't set height below 300
   frameRate(30);
 
-  w = int(width*2); // Width of 2d-Terrain
-  h = int(height*2); // Height of 2d-Terrain
+  w = int(width*3); // Width of 2d-Terrain
+  h = int(height*3); // Height of 2d-Terrain
   blockSize = 20; // Size of each block
 
-  waterHeight = -20; // Level at which water is drawn
+  waterHeight = -0; // Level at which water is drawn
   stoneEnd = 00; // Stone-color if block is at or below this Z value
   dirtEnd = 60; // Dirt-color if block is at exactly this Z value
   grassEnd = 100; // Grass color if block is at or higher than this Z value

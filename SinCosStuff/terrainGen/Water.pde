@@ -18,8 +18,8 @@ class Water {
   void calcWater(float[][] terrain) {
     for (int y = 0; y<rows-1; y++) {
       pushMatrix();
-      rotateX(PI/2); // Rotate the Terrain that will be drawn
-      translate(-w/2, -h/4, 300); // Undo rotation in order to start drawing at the upper left corner and not in the mid of canvas
+      rotateX(PI/2.5); // Rotate the Terrain that will be drawn
+      translate(-w/2, -h/2, -height); // Undo rotation in order to start drawing at the upper left corner and not in the mid of canvas
       beginShape(TRIANGLES); // Water is filled with triangles, could also be simple rects, but I wanted a more fluid simulation so I used triangles
       for (int x = 0; x<cols-1; x++) {
         if (terrain[x][y] < waterHeight) {

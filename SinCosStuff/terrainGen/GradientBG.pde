@@ -16,6 +16,7 @@ class Gradient{
 
 void setGradient() {
   pushMatrix();
+  translate(-w/2,-h/2);
   noFill();
   for (int i = y; i <= y+h; i++) {
     float inter = map(i, y, y+h, 0, 1);
