@@ -9,6 +9,8 @@ CalcTerrain cTerrain; // This class is providing terrain calculation
 DrawTerrain dTerrain; // This class draws the calculated terrain
 Water water; // This class handles water
 
+PImage text;
+
 void setup() {
   //hint(ENABLE_KEY_REPEAT); // This activates registering long key press as multiple key-press
   size(562, 794, P3D); // Fully adjustable scaling based on size; don't set height below 300
@@ -51,6 +53,8 @@ void setup() {
   lights();
   directionalLight(126, 126, 126, lightX, lightY, lightZ);
 
+  text = loadImage("ProcGen.png");
+
   // Constructor for each class
   cTerrain = new CalcTerrain(cols, rows, terrainMin, terrainMax); // Params: as var-names
   terrain = cTerrain.calcTerrain(flying); // Params: speed at which terrain should move
@@ -75,6 +79,11 @@ void draw() {
 
   // Draw water in according spots after terrain has been calculated
   water.calcWater(terrain);
+
+  // Draw text "Procedural Generation"
+  imageMode(CENTER);
+  text.resize(width/2, 0);
+  image(text, width/2, 50);
 
   // Export png's for animation
   //if (frameCount <= 300) {
