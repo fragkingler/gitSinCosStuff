@@ -16,7 +16,9 @@ class Gradient{
 
 void setGradient() {
   pushMatrix();
-  translate(-3000, -3000, 000); // Adjust the positioning in order to fill screen on 3D-environment
+  
+  // Adjust background position to canvas
+  translate(-w/2, -h/2);
   noFill();
   for (int i = y; i <= y+h*10; i++) {
     float inter = map(i, y, y+h*10, 0, 1);

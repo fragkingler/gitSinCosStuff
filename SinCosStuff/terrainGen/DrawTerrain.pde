@@ -17,7 +17,7 @@ class DrawTerrain {
     this.h = h;
 
     // Create new background-object which can be drawn together with the draw-Terrain
-    gradient = new Gradient(0, 0, -4000, width, height, gradient1, gradient2); // Params: x, y, z, width, height, gradientStartColor, gradientEndColor
+    gradient = new Gradient(0, 0, int(-h/2), w, h, gradient1, gradient2); // Params: x, y, z, width, height, gradientStartColor, gradientEndColor
   }
   
   // Draw the blocks/terrain with the calculated terrain as input
@@ -29,8 +29,10 @@ class DrawTerrain {
     
     // Get mid-point of the canvas in order to rotate the terrain in the middle
     translate(width/2, height/2-50); // The number after "height/2" is used to adjust the viewing angle of the terrain
+    
     rotateX(PI/3); // Rotate the Terrain that will be drawn
     translate(-w/2, -h/2); // Undo rotation in order to start drawing at the upper left corner and not in the mid of canvas
+    
     for (int y = 0; y<rows-1; y++) {
       for (int x = 0; x<cols; x++) {
         

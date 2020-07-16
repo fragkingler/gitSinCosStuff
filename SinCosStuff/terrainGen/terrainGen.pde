@@ -11,7 +11,7 @@ Water water; // This class handles water
 
 void setup() {
   //hint(ENABLE_KEY_REPEAT); // This activates registering long key press as multiple key-press
-  size(1000, 800, P3D); 
+  size(800, 600, P3D); // Fully adjustable scaling based on size; don't set height below 300
   frameRate(30);
 
   w = int(width*2.5); // Width of 2d-Terrain
