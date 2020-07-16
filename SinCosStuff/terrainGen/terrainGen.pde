@@ -11,10 +11,10 @@ Water water; // This class handles water
 
 void setup() {
   //hint(ENABLE_KEY_REPEAT); // This activates registering long key press as multiple key-press
-  size(800, 600, P3D); // Fully adjustable scaling based on size; don't set height below 300
+  size(562, 794, P3D); // Fully adjustable scaling based on size; don't set height below 300
   frameRate(30);
 
-  w = int(width*2.5); // Width of 2d-Terrain
+  w = int(width*2); // Width of 2d-Terrain
   h = int(height*2); // Height of 2d-Terrain
   blockSize = 20; // Size of each block
 
@@ -70,7 +70,7 @@ void draw() {
   // Pass increased flying value to calcTerrain to recalculate the "moved" terrain and save the resulted new terrain in the terrain-variable
   terrain = cTerrain.calcTerrain(flying); 
 
-  // Draw terrain after it has been calculated
+  // Draw terrain after it has been calculated + background is being drawn here
   dTerrain.drawTerrain(terrain);
 
   // Draw water in according spots after terrain has been calculated
