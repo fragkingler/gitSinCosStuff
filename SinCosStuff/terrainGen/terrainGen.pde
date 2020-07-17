@@ -1,22 +1,27 @@
-int cols, rows, blockSize, w, h, waterHeight;
+int cols, rows, blockSize, w, h, waterHeight, cloudCount, cloudStartZ, cPerc;
 color gradient1, gradient2; // Color for background-fade
 color stone, dirt, grass, waterColor, activeColor;
-float flying, flyingInc, lightX, lightY, lightZ;
+float flying, flyingInc, cloudFlyingMod, lightX, lightY, lightZ, cloudZ, killCloud;
 float terrainMax, terrainMin, stoneEnd, dirtEnd, grassEnd;
 float[][] terrain; // Array which stores calculated terrain
+String text = "Procedural Generation by Yannis Vogel";
+boolean drawImg, drawText, pause;
+
+ArrayList<Cloud> clouds;
 
 CalcTerrain cTerrain; // This class is providing terrain calculation
 DrawTerrain dTerrain; // This class draws the calculated terrain
 Water water; // This class handles water
 
-PImage text;
+PImage iText;
 
 void setup() {
   //hint(ENABLE_KEY_REPEAT); // This activates registering long key press as multiple key-press
-  size(562, 794, P3D); // Fully adjustable scaling based on size; don't set height below 300
+  //size(562, 794, P3D); // Fully adjustable scaling based on size; don't set height below 300
+  size(842, 1191, P3D); // Fully adjustable scaling based on size; don't set height below 300
   frameRate(30);
 
-  w = int(width*3); // Width of 2d-Terrain
+  w = int(width*3.2); // Width of 2d-Terrain
   h = int(height*3); // Height of 2d-Terrain
   blockSize = 20; // Size of each block
 
@@ -49,46 +54,93 @@ void setup() {
   cols = w / blockSize; 
   rows = h / blockSize;
 
+  cloudCount = 1;
+  cloudStartZ = -1700;
+  cloudFlyingMod = 20;
+  killCloud = (cloudStartZ*-1)/(cloudFlyingMod*0.5);
+  cPerc = 85;
+
+  drawImg = false;
+  drawText = true;
+  pause = false;
+
   // Enable lights and draw basic 3d-lightning
   lights();
   directionalLight(126, 126, 126, lightX, lightY, lightZ);
 
-  text = loadImage("ProcGen.png");
+  if (drawImg)
+    iText = loadImage("ProcGen.png");
 
   // Constructor for each class
   cTerrain = new CalcTerrain(cols, rows, terrainMin, terrainMax); // Params: as var-names
   terrain = cTerrain.calcTerrain(flying); // Params: speed at which terrain should move
   water = new Water(cols, rows, blockSize, waterHeight, waterColor, terrain); // Params: as var-names
   dTerrain = new DrawTerrain(cols, rows, blockSize, stoneEnd, dirtEnd, grassEnd, w, h); // Params: as var-names
+  clouds = new ArrayList<Cloud>();
 }
 
 void draw() {
+  if (!pause) {
 
-  // Enable lights and draw basic 3d-lightning
-  lights();
-  directionalLight(126, 126, 126, lightX, lightY, lightZ); // Variables: red, green, blue, X, Y, Z
+    // Enable lights and draw basic 3d-lightning
+    lights();
+    directionalLight(126, 126, 126, lightX, lightY, lightZ); // Variables: red, green, blue, X, Y, Z
 
-  // Increment flying by flyingInc in order to have a continuous "flying" effect on the terrain
-  flying+=flyingInc;
+    // Increment flying by flyingInc in order to have a continuous "flying" effect on the terrain
+    flying+=flyingInc;
 
-  // Pass increased flying value to calcTerrain to recalculate the "moved" terrain and save the resulted new terrain in the terrain-variable
-  terrain = cTerrain.calcTerrain(flying); 
+    // Pass increased flying value to calcTerrain to recalculate the "moved" terrain and save the resulted new terrain in the terrain-variable
+    terrain = cTerrain.calcTerrain(flying); 
 
-  // Draw terrain after it has been calculated + background is being drawn here
-  dTerrain.drawTerrain(terrain);
+    // Draw terrain after it has been calculated + background is being drawn here
+    dTerrain.drawTerrain(terrain);
 
-  // Draw water in according spots after terrain has been calculated
-  water.calcWater(terrain);
+    // Draw water in according spots after terrain has been calculated
+    water.calcWater(terrain);
 
-  // Draw text "Procedural Generation"
-  imageMode(CENTER);
-  text.resize(width/2, 0);
-  image(text, width/2, 50);
+    for (int i = cloudCount; i > clouds.size()-1; i--) {
+      clouds.add(new Cloud(cloudStartZ, flying*cloudFlyingMod, text));
+    }
+    for (int i = clouds.size()-1; i > 0; i--) {
+      hint(ENABLE_DEPTH_SORT);
+      cloudZ = clouds.get(i).drawCloud(flying*cloudFlyingMod);
+      hint(DISABLE_DEPTH_SORT);
+      if (cloudZ >= killCloud) {
+        clouds.remove(clouds.get(i));
+      }
+    }
+    if (random(0, 100)>cPerc) {
+      cloudCount +=1;
+    } else if (random(0, 100)>cPerc+5) {
+      cloudCount -=1;
+    }
+
+    if (drawImg) {
+      // Draw text "Procedural Generation"
+      imageMode(CENTER);
+      iText.resize(width/2, 0);
+      image(iText, width/2, 50);
+    }
+  }
 
   // Export png's for animation
   //if (frameCount <= 300) {
   //  saveFrame("terrain-#######.png");
   //}
+}
+
+void keyPressed() {
+  if (key == 'c') {
+    clouds.add(new Cloud(cloudStartZ, flying*cloudFlyingMod, text));
+  } else if (key == ' ') {
+    pause = !pause;
+  } else if (key==CODED) {
+    if (keyCode == DOWN) {
+      cloudFlyingMod +=1;
+    } else if (keyCode == UP) {
+      cloudFlyingMod -= 1;
+    }
+  }
 }
 
 // Possible interactions with keystrokes; was used to position 3d-light accordingly

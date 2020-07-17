@@ -2,7 +2,7 @@ class CalcTerrain {
   int cols, rows;
   float terrainMin, terrainMax;
   float[][] terrain;
-  
+
   // Constructor
   CalcTerrain(int cols, int rows, float terrainMin, float terrainMax) {
     this.cols = cols;

@@ -4,7 +4,7 @@ PGraphics buffer2;
 // Credit to "PurePixel" and "MadPixel" for creating the font
 PFont font;
 
-int frame = 6349;
+int frame = 6560;
 int textX, textY;
 
 void setup() {
