@@ -1,13 +1,13 @@
-int cols, rows, blockSize, w, h, waterHeight, cloudCount, cloudStartZ, cPerc;
+int cols, rows, blockSize, w, h, waterHeight, cloudCount, cloudStartZ, cPerc, rFrame;
 color gradient1, gradient2; // Color for background-fade
 color stone, dirt, grass, waterColor, activeColor;
 float flying, flyingInc, cloudFlyingMod, lightX, lightY, lightZ, cloudZ, killCloud;
 float terrainMax, terrainMin, stoneEnd, dirtEnd, grassEnd;
 float[][] terrain; // Array which stores calculated terrain
-String text = "Procedural Generation by Yannis Vogel";
-boolean drawImg, drawText, pause;
+String text = "Procedural Generation by Yannis Vogel"; // Words to be drawn on clouds
+boolean drawImg, drawText, pause, plainWater, record;
 
-ArrayList<Cloud> clouds;
+ArrayList<Cloud> clouds; // Array containing cloud-objects
 
 CalcTerrain cTerrain; // This class is providing terrain calculation
 DrawTerrain dTerrain; // This class draws the calculated terrain
@@ -42,6 +42,7 @@ void setup() {
   lightY = 1250;
   lightZ = 1300;
 
+  // Gradient background, gradient1 is the upper gradient color, gradient2 is the lower gradient color
   gradient1 = color(30, 151, 235);
   gradient2 = color(125, 214, 251);
 
@@ -54,15 +55,18 @@ void setup() {
   cols = w / blockSize; 
   rows = h / blockSize;
 
-  cloudCount = 1;
-  cloudStartZ = -1700;
-  cloudFlyingMod = 20;
-  killCloud = (cloudStartZ*-1)/(cloudFlyingMod*0.5);
-  cPerc = 85;
+  // Cloud gen modificators
+  cloudCount = 1; // Initial cloud count
+  cloudStartZ = -1700; // Modificator to start cloud drawing behind background
+  cloudFlyingMod = 20; // Modificator for cloud-speed
+  killCloud = (cloudStartZ*-1)/(cloudFlyingMod*0.5); // Kill cloud at this Z value
+  cPerc = 15; // Probability of new cloud spawning at a frame
 
-  drawImg = false;
-  drawText = true;
-  pause = false;
+  drawImg = false; // Draw header as image at the top of poster; Looks bad so better keep disabled
+  drawText = true; // Draw text on clouds
+  pause = false; // Pause animation - Switches on keypress
+  plainWater = true; // draw plain (realistic) water or water that adjusts to terrain (unrealistic)
+  record = false;
 
   // Enable lights and draw basic 3d-lightning
   lights();
@@ -74,13 +78,20 @@ void setup() {
   // Constructor for each class
   cTerrain = new CalcTerrain(cols, rows, terrainMin, terrainMax); // Params: as var-names
   terrain = cTerrain.calcTerrain(flying); // Params: speed at which terrain should move
-  water = new Water(cols, rows, blockSize, waterHeight, waterColor, terrain); // Params: as var-names
+  water = new Water(cols, rows, blockSize, waterHeight, waterColor, plainWater, terrain); // Params: as var-names
   dTerrain = new DrawTerrain(cols, rows, blockSize, stoneEnd, dirtEnd, grassEnd, w, h); // Params: as var-names
-  clouds = new ArrayList<Cloud>();
+  clouds = new ArrayList<Cloud>(); // Initialisation of the Clouds-Array
 }
 
 void draw() {
-  if (!pause) {
+  if (!pause) { // Check pause status
+    if (record) {
+      if (rFrame+300 < frameCount) {
+        saveFrame("export/frame-#####.png");
+      } else {
+        record = false;
+      }
+    }
 
     // Enable lights and draw basic 3d-lightning
     lights();
@@ -98,23 +109,28 @@ void draw() {
     // Draw water in according spots after terrain has been calculated
     water.calcWater(terrain);
 
+    // Draw clouds until CloudCount is reached
     for (int i = cloudCount; i > clouds.size()-1; i--) {
-      clouds.add(new Cloud(cloudStartZ, flying*cloudFlyingMod, text));
+      clouds.add(new Cloud(cloudStartZ, flying*cloudFlyingMod, text)); // Add new cloud with params: Z-Position, CloudSpeed and the words that are printed on clouds
     }
-    for (int i = clouds.size()-1; i > 0; i--) {
-      hint(ENABLE_DEPTH_SORT);
-      cloudZ = clouds.get(i).drawCloud(flying*cloudFlyingMod);
-      hint(DISABLE_DEPTH_SORT);
-      if (cloudZ >= killCloud) {
-        clouds.remove(clouds.get(i));
+
+    for (int i = clouds.size()-1; i > 0; i--) { // Iterate through all clouds, from last to first in order to prevent out of bounds on delete
+      hint(ENABLE_DEPTH_SORT); // Depth sorting for transparency of clouds
+      cloudZ = clouds.get(i).drawCloud(flying*cloudFlyingMod); // Draw cloud with "flying" animation
+      hint(DISABLE_DEPTH_SORT); // Disable depth sorting in order to prevent render problems/bugs
+      if (cloudZ >= killCloud) { // Is cloud in deadzone?
+        clouds.remove(clouds.get(i)); // Kill/delete cloud to save resources
       }
     }
-    if (random(0, 100)>cPerc) {
+
+    // Increase or decrease base cloudCount randomly
+    if (random(0, 100) < cPerc) { 
       cloudCount +=1;
-    } else if (random(0, 100)>cPerc+5) {
+    } else if (random(0, 100) < cPerc-5) {
       cloudCount -=1;
     }
 
+    // Draw image at the top of poster, if enabled
     if (drawImg) {
       // Draw text "Procedural Generation"
       imageMode(CENTER);
@@ -122,22 +138,23 @@ void draw() {
       image(iText, width/2, 50);
     }
   }
-
-  // Export png's for animation
-  //if (frameCount <= 300) {
-  //  saveFrame("terrain-#######.png");
-  //}
 }
 
+// Key interactions
 void keyPressed() {
-  if (key == 'c') {
+  if (key == 'c') { // Add new Cloud when "C" is pressed
     clouds.add(new Cloud(cloudStartZ, flying*cloudFlyingMod, text));
-  } else if (key == ' ') {
+  } else if (key == ' ') { // Pause/unpause program on spacebar
     pause = !pause;
+  } else if (key == 's') { // Export png as single frame
+    saveFrame("terrain-#######.png");
+  } else if (key == 'r') { // Export png's for animation
+    record = true;
+    rFrame = frameCount;
   } else if (key==CODED) {
-    if (keyCode == DOWN) {
+    if (keyCode == DOWN) { // Increase cloud-speed and teleport clouds forward on arrow-down key
       cloudFlyingMod +=1;
-    } else if (keyCode == UP) {
+    } else if (keyCode == UP) { // Decrease cloud-speed and teleport clouds backwards on arrow-down key
       cloudFlyingMod -= 1;
     }
   }
