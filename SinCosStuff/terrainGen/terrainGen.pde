@@ -5,7 +5,7 @@ float flying, flyingInc, cloudFlyingMod, lightX, lightY, lightZ, cloudZ, killClo
 float terrainMax, terrainMin, stoneEnd, dirtEnd, grassEnd;
 float[][] terrain; // Array which stores calculated terrain
 String text = "Procedural Generation by Yannis Vogel"; // Words to be drawn on clouds
-boolean drawImg, drawText, pause, plainWater, record;
+boolean drawImg, drawText, pause, plainWater, record, stopCloud, cloudStopper = false;
 
 ArrayList<Cloud> clouds; // Array containing cloud-objects
 
@@ -14,6 +14,7 @@ DrawTerrain dTerrain; // This class draws the calculated terrain
 Water water; // This class handles water
 
 PImage iText;
+PFont font;
 
 void setup() {
   //hint(ENABLE_KEY_REPEAT); // This activates registering long key press as multiple key-press
@@ -62,18 +63,25 @@ void setup() {
   killCloud = (cloudStartZ*-1)/(cloudFlyingMod*0.5); // Kill cloud at this Z value
   cPerc = 15; // Probability of new cloud spawning at a frame
 
-  drawImg = false; // Draw header as image at the top of poster; Looks bad so better keep disabled
+  drawImg = false; // Draw text "Procedural generation" as image at the top of poster; Looks bad so better keep disabled
   drawText = true; // Draw text on clouds
   pause = false; // Pause animation - Switches on keypress
-  plainWater = true; // draw plain (realistic) water or water that adjusts to terrain (unrealistic)
-  record = false;
+  plainWater = true; // Draw plain (realistic) water or water that adjusts to terrain (unrealistic)
+  record = false; // Record animation for next 300 frames. Activate on key "r"
+  cloudStopper = false; // When active, clouds that are hovered over will be stopped
 
   // Enable lights and draw basic 3d-lightning
   lights();
   directionalLight(126, 126, 126, lightX, lightY, lightZ);
 
+  // Load text-image that will appear at the top of poster if enabled
   if (drawImg)
     iText = loadImage("ProcGen.png");
+    
+  // Set text defaults and font. TextMode(SHAPE) is responsible for quality-lossless text display
+  font = createFont("Minecrafter.Reg.ttf", 32);
+  textFont(font);
+  textMode(SHAPE);
 
   // Constructor for each class
   cTerrain = new CalcTerrain(cols, rows, terrainMin, terrainMax); // Params: as var-names
@@ -86,7 +94,7 @@ void setup() {
 void draw() {
   if (!pause) { // Check pause status
     if (record) {
-      if (rFrame+300 < frameCount) {
+      if (rFrame < frameCount+300) { // Check if 300 frames been saved since pressing "r"
         saveFrame("export/frame-#####.png");
       } else {
         record = false;
@@ -111,10 +119,10 @@ void draw() {
 
     // Draw clouds until CloudCount is reached
     for (int i = cloudCount; i > clouds.size()-1; i--) {
-      clouds.add(new Cloud(cloudStartZ, flying*cloudFlyingMod, text)); // Add new cloud with params: Z-Position, CloudSpeed and the words that are printed on clouds
+      clouds.add(new Cloud(clouds.size(), cloudStartZ, flying*cloudFlyingMod, text)); // Add new cloud with params: Cloud-ID, Z-Position, CloudSpeed and the words that are printed on clouds
     }
 
-    for (int i = clouds.size()-1; i > 0; i--) { // Iterate through all clouds, from last to first in order to prevent out of bounds on delete
+    for (int i = clouds.size()-1; i >= 0; i--) { // Iterate through all clouds, from last to first in order to prevent out of bounds on delete
       hint(ENABLE_DEPTH_SORT); // Depth sorting for transparency of clouds
       cloudZ = clouds.get(i).drawCloud(flying*cloudFlyingMod); // Draw cloud with "flying" animation
       hint(DISABLE_DEPTH_SORT); // Disable depth sorting in order to prevent render problems/bugs
@@ -134,7 +142,7 @@ void draw() {
     if (drawImg) {
       // Draw text "Procedural Generation"
       imageMode(CENTER);
-      iText.resize(width/2, 0);
+      iText.resize(width/2, 0); // Resize will keep aspect ratio of original image
       image(iText, width/2, 50);
     }
   }
@@ -143,12 +151,12 @@ void draw() {
 // Key interactions
 void keyPressed() {
   if (key == 'c') { // Add new Cloud when "C" is pressed
-    clouds.add(new Cloud(cloudStartZ, flying*cloudFlyingMod, text));
+    clouds.add(new Cloud(clouds.size(), cloudStartZ, flying*cloudFlyingMod, text));
   } else if (key == ' ') { // Pause/unpause program on spacebar
     pause = !pause;
   } else if (key == 's') { // Export png as single frame
     saveFrame("terrain-#######.png");
-  } else if (key == 'r') { // Export png's for animation
+  } else if (key == 'r') { // Export png's for animation, 300 frames after pressing are "recorded"
     record = true;
     rFrame = frameCount;
   } else if (key==CODED) {
@@ -160,6 +168,10 @@ void keyPressed() {
   }
 }
 
+// Stop clouds when clicking on it (top-front-right corner)
+//void mouseReleased() {
+//  cloudStopper = !cloudStopper;
+//}
 // Possible interactions with keystrokes; was used to position 3d-light accordingly
 //void keyPressed() {
 //  if (key == 'd') {
